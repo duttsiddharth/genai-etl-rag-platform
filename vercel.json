@@ -1,0 +1,13 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "app/main.py": {
+      "maxDuration": 30
+    }
+  },
+  "env": {
+    "API_KEY": "documind-demo-2026",
+    "SOURCE_DIR": "data/sample_docs",
+    "VERCEL_DEMO": "1"
+  }
+}
