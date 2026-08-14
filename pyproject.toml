@@ -3,11 +3,12 @@ pythonpath = ["."]
 testpaths = ["tests"]
 
 [tool.vercel]
-# Vercel's Python framework auto-detection doesn't see app/main.py (the
-# thin re-export shim used by the legacy vercel.json `functions` build)
-# as a real entrypoint, since it only imports `app` rather than defining
-# it. Declaring the entrypoint explicitly here points detection straight
-# at the real FastAPI instance in src/api/main.py.
+# Vercel's Python auto-detection only scans app.py/index.py/server.py/
+# main.py/wsgi.py/asgi.py at the repo root or directly under src/ or
+# app/ - it never looks two levels deep at src/api/main.py, so it can't
+# find the FastAPI app on its own. This entrypoint key points straight
+# at it (module:variable form); vercel.json's functions key must match
+# this same "src/api/main.py" path.
 entrypoint = "src.api.main:app"
 
 [tool.ruff]
