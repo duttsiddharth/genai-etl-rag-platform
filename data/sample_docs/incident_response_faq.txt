@@ -1,0 +1,19 @@
+Incident Response FAQ
+
+Q: The /health endpoint is returning a 503. What should I check first?
+A: A 503 from /health usually means the vector store is unreachable. Check the API pod logs for a connection error, then verify the VECTOR_STORE environment variable and, if using Chroma, confirm the persistent volume is mounted correctly. If using the default numpy backend, confirm the data directory is writable.
+
+Q: Query latency has spiked above the three second P95 target. What's the likely cause?
+A: The two most common causes are a cold-started embedding model on a freshly scaled pod, or the upstream managed LLM provider throttling requests. Check the request_latency_seconds histogram on the /metrics endpoint to confirm which stage is slow, and check the cloud provider's status page for throttling incidents.
+
+Q: The retrieval_hit_rate metric is trending downward over several days. What does that mean and what should I do?
+A: A declining hit-rate gauge usually indicates corpus drift: new documents have been added whose topics aren't well represented by the current embedding model or chunking configuration, or the index has gone stale relative to source changes. Re-run the offline evaluation harness against a representative query set, compare against the last recorded baseline, and consider re-ingesting or re-tuning the embedding adapter if the regression is confirmed.
+
+Q: The agent keeps hitting its max_steps limit without finishing. What's going on?
+A: This typically means the goal is too complex for the available tool set, or a recent change to the planning prompt regressed step efficiency. Inspect the steps array returned in the agent response to see exactly which sub-queries were issued and where the loop stalled.
+
+Q: All requests are returning 401 Unauthorized. What should I check?
+A: Confirm the X-API-Key header is being sent and matches the value mounted into the pod via the Kubernetes Secret. A common cause is a Secret that wasn't updated after an API key rotation.
+
+Q: The nightly CI build is failing at the image push step. What's the likely cause?
+A: Registry credentials for the container registry (ECR, ACR, or Artifact Registry depending on cloud) have most likely expired and need to be rotated in the CI environment's secret store.

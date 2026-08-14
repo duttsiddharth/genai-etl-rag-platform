@@ -1,0 +1,7 @@
+{
+  "epochs": 200,
+  "final_loss": 0.0,
+  "weight_path": "artifacts/finetuned/embedding_adapter.npy",
+  "hit_rate_before": 0.6666666666666666,
+  "hit_rate_after": 1.0
+}

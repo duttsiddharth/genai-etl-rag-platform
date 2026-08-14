@@ -1,0 +1,13 @@
+New GenAI Developer Onboarding Guide
+
+Welcome to the DocuMind AI team. This guide covers what a new GenAI Developer needs to know in the first two weeks.
+
+Environment setup: clone the repository, create a Python 3.11 virtual environment, and install dependencies from requirements.txt. Copy .env.example to .env and fill in cloud credentials only if you plan to test against a real cloud provider; the default local configuration runs entirely offline using the dependency-free hashing embedding provider, the numpy vector store, and the stub LLM provider, so you can be productive on day one without waiting on credential provisioning.
+
+Codebase orientation: the src/etl package handles extraction, transformation, and loading of source documents. The src/genai package contains the core generative AI logic: chunking, embeddings, vector store, hybrid retrieval, the RAG chain, the agent orchestrator and its tools, and the fine-tuning experiment code. The src/api package exposes everything as a FastAPI service. The src/cloud package contains the provider-agnostic cloud storage interface and its AWS, Azure, and GCP implementations. The src/monitoring package contains structured logging and Prometheus metrics.
+
+Running things locally: run scripts/run_pipeline_demo.py to ingest the sample documents and print a summary report, then start the API with uvicorn src.api.main:app --reload. The interactive API docs are available at /docs once the server is running.
+
+Testing: run pytest from the repository root to execute the full unit and integration suite. The evaluation harness under tests/evaluation compares dense-only, lexical-only, and hybrid retrieval quality and writes a report used in the RAG evaluation document.
+
+Who to ask: the Solution Architect owns the architecture design document and can advise on component boundaries. The MLOps Engineer owns the Docker, Kubernetes, Terraform, and CI/CD configuration under infra/. The QA Engineer owns the test plan and can help you write new test cases that follow the existing Given/When/Then format.

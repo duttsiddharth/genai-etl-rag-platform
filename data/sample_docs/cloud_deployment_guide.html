@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head><title>Cloud Deployment Guide</title></head>
+<body>
+<h1>DocuMind AI Cloud Deployment Guide</h1>
+
+<h2>AWS Deployment</h2>
+<p>The AWS deployment topology runs the API on Amazon EKS behind an Application Load Balancer. Raw documents and ingestion manifests are stored in a versioned, encrypted S3 bucket. Managed model access goes through Amazon Bedrock, which hosts both the embedding model and the chat model behind a single IAM-scoped API. The workload's IAM role is scoped to least privilege: S3 read and write on the project prefix only, and Bedrock InvokeModel only. Logs and metrics flow to CloudWatch. Terraform provisions the S3 bucket, the ECR repository for container images, the IAM role, and the CloudWatch log group.</p>
+
+<h2>Azure Deployment</h2>
+<p>The Azure equivalent runs the API on Azure Kubernetes Service. Documents are stored in Azure Blob Storage, and managed model access goes through Azure OpenAI Service. Azure Monitor replaces CloudWatch for logs and metrics. Azure Container Registry replaces ECR for image storage.</p>
+
+<h2>GCP Deployment</h2>
+<p>The GCP equivalent runs the API on Google Kubernetes Engine. Documents are stored in Google Cloud Storage, and managed model access goes through Vertex AI. Cloud Monitoring replaces CloudWatch, and Artifact Registry replaces ECR.</p>
+
+<h2>Scaling and Cost Controls</h2>
+<p>In all three clouds, the API pods are stateless and scale horizontally behind a horizontal pod autoscaler targeting seventy percent CPU utilization, with a minimum of two replicas and a maximum of six. The agent orchestrator enforces a hard maximum step count per run to prevent runaway tool-call loops from driving up managed-model spend. Embedding calls are batched wherever possible to reduce per-call overhead.</p>
+
+<h2>Rollback Procedure</h2>
+<p>If a release causes elevated error rates, the on-call engineer runs a Kubernetes rollout undo to revert to the previous container image, which is retained as one of the last five ReplicaSets. If the problem originates from a bad ingestion rather than bad code, the fix is to restore the previous manifest snapshot from S3 versioning and re-run ingestion only on the affected source paths.</p>
+</body>
+</html>
