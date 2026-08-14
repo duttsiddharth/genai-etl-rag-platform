@@ -15,7 +15,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from src.api.middleware.monitoring import request_logging_middleware
@@ -84,6 +84,14 @@ app.include_router(ingest.router, tags=["ingest"])
 app.include_router(query.router, tags=["query"])
 app.include_router(agent.router, tags=["agent"])
 app.include_router(metrics.router, tags=["metrics"])
+
+
+@app.get("/", include_in_schema=False)
+async def root() -> RedirectResponse:
+    """Bare root has no API meaning of its own; send browsers straight to
+    the interactive docs instead of a bare 404 - matters for a public demo
+    link someone might open cold with no other context."""
+    return RedirectResponse(url="/docs")
 
 
 @app.exception_handler(StarletteHTTPException)
